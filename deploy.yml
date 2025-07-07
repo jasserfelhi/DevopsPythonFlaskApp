@@ -1,0 +1,26 @@
+name: Local Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: SSH to localhost and deploy
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd DevopsPythonFlaskApp || git clone https://github.com/jasserfelhi/DevopsPythonFlaskApp.git
+          cd DevopsPythonFlaskApp
+          git pull origin main
+          docker-compose down
+          docker-compose up -d --build
